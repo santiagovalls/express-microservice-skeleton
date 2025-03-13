@@ -1,0 +1,220 @@
+# Express Microservice with TypeScript
+
+Create a complete Express microservice with TypeScript that includes JWT authentication, error handling, logging, and mock endpoints. The project should follow best practices for TypeScript development and have a clean, modular structure.
+
+## Project Structure
+
+Create the following structure:
+```
+express-microservice-skeleton/
+├── src/
+│   ├── config/
+│   │   ├── index.ts
+│   │   └── permissions.json
+│   ├── controllers/
+│   │   ├── authController.ts
+│   │   └── mockController.ts
+│   ├── interfaces/
+│   │   ├── auth.ts
+│   │   ├── common.ts
+│   │   ├── logger.ts
+│   │   └── mock.ts
+│   ├── middlewares/
+│   │   ├── authMiddleware.ts
+│   │   ├── authorizationMiddleware.ts
+│   │   └── errorHandler.ts
+│   ├── routes/
+│   │   ├── authRoutes.ts
+│   │   └── mockRoutes.ts
+│   ├── utils/
+│   │   └── logger.ts
+│   ├── app.ts
+│   └── server.ts
+├── scripts/
+│   └── clean-logs.ts
+├── logs/
+├── .env.development
+├── .env.test
+├── .gitignore
+├── jest.config.js
+├── mock-response.json
+├── nodemon.json
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Core Features
+
+1. **TypeScript Configuration**: Set up TypeScript with appropriate configuration for Node.js and Express.
+2. **Environment Configuration**: Load environment variables from .env files based on NODE_ENV.
+3. **JWT Authentication**: Implement JWT-based authentication with login endpoint.
+4. **Role-Based Authorization**: Implement middleware for role-based access control.
+5. **Error Handling**: Create centralized error handling with custom error classes.
+6. **Logging**: Implement Winston logger with file rotation.
+7. **Mock Endpoints**: Create endpoints that return mock data with authentication.
+8. **Health Check**: Implement a health check endpoint.
+9. **Testing Setup**: Configure Jest for TypeScript testing.
+
+## Detailed Requirements
+
+### TypeScript Configuration
+
+Create a `tsconfig.json` file with the following settings:
+- Target: ES2022
+- Module: NodeNext
+- ModuleResolution: NodeNext
+- Enable strict type checking
+- Output directory: dist
+- Enable source maps
+- Enable JSON module resolution
+
+### Package.json
+
+Include the following dependencies:
+- express
+- cors
+- helmet
+- dotenv
+- jsonwebtoken
+- morgan
+- winston
+- winston-daily-rotate-file
+
+And dev dependencies:
+- typescript
+- @types/express
+- @types/cors
+- @types/morgan
+- @types/jsonwebtoken
+- @types/node
+- @types/jest
+- @types/supertest
+- ts-node
+- ts-jest
+- jest
+- nodemon
+- supertest
+
+Configure scripts for development, testing, and production.
+
+### Environment Configuration
+
+Create a configuration module that:
+- Loads environment variables from .env files based on NODE_ENV
+- Validates required configuration parameters
+- Exports a typed configuration object
+
+### Authentication
+
+Implement JWT authentication with:
+- Login endpoint that accepts username/password
+- JWT token generation with appropriate payload
+- Middleware to verify tokens
+- Mock users for testing (admin and regular user)
+
+### Authorization
+
+Implement role-based authorization with:
+- Middleware to check user roles against required permissions
+- JSON configuration file for role permissions
+- Different access levels for admin and regular users
+
+### Error Handling
+
+Create error handling middleware that:
+- Handles 404 errors
+- Provides consistent error responses
+- Logs errors appropriately
+- Includes custom error classes
+
+### Logging
+
+Implement a logging utility that:
+- Uses Winston for structured logging
+- Rotates log files daily
+- Configures log level based on environment
+- Integrates with Morgan for HTTP request logging
+
+### Mock Endpoints
+
+Create the following endpoints:
+- `/login` - Authenticates users and returns JWT token
+- `/mock` - Returns mock data (requires authentication)
+- `/admin-mock` - Returns admin-specific mock data (requires admin role)
+- `/user-mock` - Returns user-specific mock data (requires user role)
+- `/health-check` - Returns service health status (public)
+
+### Interfaces
+
+Create TypeScript interfaces for:
+- Request/Response objects
+- User and authentication objects
+- Configuration objects
+- Logger objects
+- Mock data objects
+
+### Testing
+
+Configure Jest for TypeScript testing with:
+- Support for ES modules
+- TypeScript compilation
+- Test environment configuration
+
+## Implementation Details
+
+### Auth Controller
+
+Implement a controller that:
+- Validates login credentials
+- Generates JWT tokens
+- Returns appropriate responses
+
+### Mock Controller
+
+Implement a controller that:
+- Reads mock data from JSON file
+- Returns different data based on user role
+- Implements health check functionality
+
+### Middleware
+
+Implement middleware for:
+- JWT token verification
+- Role-based authorization
+- Error handling
+
+### Logger
+
+Implement a logger that:
+- Writes to rotating log files
+- Configures log level based on environment
+- Provides a stream for Morgan integration
+
+### Routes
+
+Implement routes for:
+- Authentication endpoints
+- Mock data endpoints
+- Health check endpoint
+
+### Scripts
+
+Create a script to clean log files before starting the server.
+
+## Security Considerations
+
+- Use helmet for security headers
+- Implement proper JWT token validation
+- Sanitize user inputs
+- Use environment variables for sensitive information
+- Implement proper error handling to avoid leaking sensitive information
+
+## Additional Notes
+
+- All code should be written in English (variable names, comments, etc.)
+- Follow TypeScript best practices for type safety
+- Use async/await for asynchronous operations
+- Implement proper error handling throughout the application
+- Use ES modules syntax
+- Follow a consistent coding style 
