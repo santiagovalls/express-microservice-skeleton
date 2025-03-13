@@ -6,12 +6,14 @@
   "type": "module",
   "scripts": {
     "predev": "npm run clean-logs",
-    "dev": "set NODE_ENV=development && node src/server.js",
+    "dev": "set NODE_ENV=development && nodemon --watch src --ext js,json src/server.js",
+    "dev:debug": "set NODE_ENV=development && nodemon --inspect --watch src --ext js,json src/server.js",
     "qa": "set NODE_ENV=qa && node src/server.js",
     "prod": "set NODE_ENV=production && node src/server.js",
     "start": "npm run prod",
     "pretest": "npm run clean-logs",
     "test": "set NODE_ENV=test && node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "set NODE_ENV=test && node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll",
     "clean-logs": "node scripts/clean-logs.js"
   },
   "author": "",
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "jest": "29.7.0",
+    "nodemon": "2.0.22",
     "supertest": "6.3.3"
   }
 }
