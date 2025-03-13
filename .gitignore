@@ -1,4 +1,4 @@
-# Dependencias
+# Dependencies
 node_modules/
 npm-debug.log
 yarn-debug.log
@@ -6,7 +6,7 @@ yarn-error.log
 package-lock.json
 yarn.lock
 
-# Archivos de entorno
+# Environment files
 .env
 .env.development
 .env.qa
@@ -21,20 +21,20 @@ yarn.lock
 logs/
 *.log
 
-# Directorios de construcción
+# Build directories
 dist/
 build/
 coverage/
 
-# Archivos temporales
+# Temporary files
 .tmp/
 .temp/
 
-# Archivos del sistema
+# System files
 .DS_Store
 Thumbs.db
 
-# Archivos de IDE y editores
+# IDE and editor files
 .idea/
 .vscode/
 *.sublime-project
@@ -45,16 +45,16 @@ Thumbs.db
 *.sln
 *.sw?
 
-# Archivos de debug
+# Debug files
 .node-debug/
 .chrome/
 
-# Archivos de caché
+# Cache files
 .npm/
 .eslintcache
 .stylelintcache
 
-# Otros
+# Others
 .directory
 *.tgz
 .node_repl_history 
