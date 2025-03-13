@@ -1,0 +1,8 @@
+{
+  "mock": true,
+  "data": {
+    "id": 1,
+    "name": "Mock Data",
+    "timestamp": "2025-03-12T23:41:53Z"
+  }
+}

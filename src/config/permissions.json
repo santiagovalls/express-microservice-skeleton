@@ -1,0 +1,4 @@
+{
+  "admin": ["/admin-mock", "/user-mock", "/mock"],
+  "user": ["/user-mock", "/mock"]
+}
