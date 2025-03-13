@@ -1,4 +1,5 @@
 import { execSync } from "child_process";
+import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -21,16 +22,26 @@ if (!fs.existsSync(envPath)) {
   process.exit(1);
 }
 
+// Load environment variables from the specific .env file
+const envConfig = dotenv.config({ path: envPath });
+console.log(`Loaded environment variables from ${envFile}`);
+
+// Create a new environment with the loaded variables
+const env = { ...process.env, ...envConfig.parsed };
+
 try {
   // Generate Prisma client
   console.log("Generating Prisma client...");
-  execSync("npx prisma generate", { stdio: "inherit" });
+  execSync("npx prisma generate", {
+    stdio: "inherit",
+    env,
+  });
 
   // Create migrations
   console.log("Creating migrations...");
   execSync(`npx prisma migrate dev --name init`, {
     stdio: "inherit",
-    env: { ...process.env, NODE_ENV: nodeEnv },
+    env,
   });
 
   console.log("Database setup completed successfully!");
