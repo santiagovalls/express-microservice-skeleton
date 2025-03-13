@@ -5,15 +5,14 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "predev": "npm run clean-logs && npm run check-updates",
+    "predev": "npm run clean-logs",
     "dev": "set NODE_ENV=development && node src/server.js",
     "qa": "set NODE_ENV=qa && node src/server.js",
     "prod": "set NODE_ENV=production && node src/server.js",
     "start": "npm run prod",
-    "pretest": "npm run clean-logs && npm run check-updates",
+    "pretest": "npm run clean-logs",
     "test": "set NODE_ENV=test && node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "clean-logs": "node scripts/clean-logs.js",
-    "check-updates": "node scripts/check-updates.js"
+    "clean-logs": "node scripts/clean-logs.js"
   },
   "author": "",
   "license": "ISC",
