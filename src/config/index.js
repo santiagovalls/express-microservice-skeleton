@@ -32,6 +32,7 @@ const requiredParams = [
   "JWT_EXPIRATION",
   "LOG_LEVEL",
   "NODE_ENV",
+  "DATABASE_URL",
 ];
 
 // Check for missing parameters
@@ -54,6 +55,7 @@ All of the following parameters are required in your ${envFile} file:
 - JWT_EXPIRATION: Expiration time for JWT tokens (e.g., "2h", "1d")
 - LOG_LEVEL: Logging level (debug, info, warn, error)
 - NODE_ENV: Environment (development, qa, production, test)
+- DATABASE_URL: URL for the database connection
 
 Please add the missing parameters to your environment file and try again.`;
 
@@ -68,4 +70,5 @@ export default {
   jwtExpiration: process.env.JWT_EXPIRATION,
   logLevel: process.env.LOG_LEVEL,
   nodeEnv: process.env.NODE_ENV,
+  databaseUrl: process.env.DATABASE_URL,
 };

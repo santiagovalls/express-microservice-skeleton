@@ -14,11 +14,22 @@
     "pretest": "npm run clean-logs",
     "test": "set NODE_ENV=test && node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "set NODE_ENV=test && node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll",
-    "clean-logs": "node scripts/clean-logs.js"
+    "clean-logs": "node scripts/clean-logs.js",
+    "db:setup": "node scripts/setup-database.js",
+    "db:setup:dev": "set NODE_ENV=development && node scripts/setup-database.js",
+    "db:setup:test": "set NODE_ENV=test && node scripts/setup-database.js",
+    "db:setup:qa": "set NODE_ENV=qa && node scripts/setup-database.js",
+    "db:setup:prod": "set NODE_ENV=production && node scripts/setup-database.js",
+    "db:generate": "npx prisma generate",
+    "db:studio": "npx prisma studio",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "bcrypt": "^5.1.1",
     "cors": "2.8.5",
     "dotenv": "16.3.1",
     "express": "4.21.2",
@@ -31,6 +42,7 @@
   "devDependencies": {
     "jest": "29.7.0",
     "nodemon": "3.1.9",
+    "prisma": "^6.5.0",
     "supertest": "6.3.3"
   }
 }

@@ -1,29 +1,18 @@
 import jwt from "jsonwebtoken";
 import config from "../config/index.js";
+import {
+  findUserByUsername,
+  updateLastLogin,
+  verifyPassword,
+} from "../services/userService.js";
 import logger from "../utils/logger.js";
-
-// Users with their credentials and UUIDs
-const USERS = [
-  {
-    username: "admin",
-    password: "1234",
-    uuid: "550e8400-e29b-41d4-a716-446655440000",
-    role: "admin",
-  },
-  {
-    username: "user",
-    password: "1234",
-    uuid: "550e8400-e29b-41d4-a716-446655440001",
-    role: "user",
-  },
-];
 
 /**
  * Controller for user login
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-export const login = (req, res) => {
+export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
@@ -35,22 +24,33 @@ export const login = (req, res) => {
         .json({ error: "Username and password are required" });
     }
 
-    // Find user by username and password
-    const user = USERS.find(
-      (u) => u.username === username && u.password === password
-    );
+    // Find user by username
+    const user = await findUserByUsername(username);
 
-    // Validate credentials
+    // Validate user exists
     if (!user) {
       logger.warn(`Login attempt failed for user: ${username}`);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    // Validate password
+    const isPasswordValid = await verifyPassword(password, user.password);
+
+    if (!isPasswordValid) {
+      logger.warn(
+        `Login attempt failed for user: ${username} (invalid password)`
+      );
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Update last login time
+    await updateLastLogin(user.id);
+
     // Generate JWT token with user information
     const token = jwt.sign(
       {
+        id: user.id,
         username: user.username,
-        uuid: user.uuid,
         role: user.role,
       },
       config.jwtSecret,
@@ -62,8 +62,16 @@ export const login = (req, res) => {
     // Log successful login
     logger.info(`User ${username} logged in successfully`);
 
-    // Return token
-    return res.status(200).json({ token });
+    // Return token and user information
+    return res.status(200).json({
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        role: user.role,
+      },
+    });
   } catch (error) {
     logger.error(`Login error: ${error.message}`);
     return res.status(500).json({ error: "Internal server error" });

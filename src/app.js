@@ -7,7 +7,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 // Import configuration and utilities
+import { initDatabase } from "./config/database.js";
 import config from "./config/index.js";
+import { seedInitialUsers } from "./services/userService.js";
 import logger from "./utils/logger.js";
 
 // Import routes
@@ -46,12 +48,30 @@ app.use("/", mockRoutes); // Mock data and health check routes
 app.use(notFoundHandler); // Handle 404 errors
 app.use(errorHandler); // Handle all other errors
 
-// Start the server only if this file is run directly
+// Initialize the database and start the server if this file is run directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const PORT = config.port;
-  app.listen(PORT, () => {
-    logger.info(`Server running in ${config.nodeEnv} mode on port ${PORT}`);
-  });
+  const startServer = async () => {
+    try {
+      // Initialize the database
+      await initDatabase();
+
+      // Seed initial users in development and test environments
+      if (["development", "test"].includes(config.nodeEnv)) {
+        await seedInitialUsers();
+      }
+
+      // Start the server
+      const PORT = config.port;
+      app.listen(PORT, () => {
+        logger.info(`Server running in ${config.nodeEnv} mode on port ${PORT}`);
+      });
+    } catch (error) {
+      logger.error(`Failed to start server: ${error.message}`);
+      process.exit(1);
+    }
+  };
+
+  startServer();
 }
 
 // Export the app for testing

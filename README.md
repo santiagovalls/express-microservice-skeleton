@@ -1,10 +1,12 @@
-# Express Microservice with JWT
+# Express Microservice with JWT and Database Integration
 
-This project implements a microservice using Express.js with JWT authentication and configuration for multiple environments.
+This project implements a microservice using Express.js with JWT authentication, PostgreSQL database integration via Prisma ORM, and configuration for multiple environments.
 
 ## Features
 
-- JWT authentication with multiple user support
+- JWT authentication with database-backed user management
+- PostgreSQL database for all environments (development, test, QA, production)
+- Prisma ORM for database operations
 - Protected endpoint for mock data with user information
 - Health check endpoint
 - Configuration for multiple environments (development, QA, production)
@@ -15,6 +17,7 @@ This project implements a microservice using Express.js with JWT authentication 
 
 - Node.js (version 14 or higher)
 - npm (version 6 or higher)
+- Docker and Docker Compose (for PostgreSQL)
 
 ## Installation
 
@@ -23,6 +26,45 @@ This project implements a microservice using Express.js with JWT authentication 
 
 ```bash
 npm install
+```
+
+## Database Setup
+
+The project uses PostgreSQL for all environments to ensure consistency and avoid compatibility issues.
+
+### Setting up PostgreSQL with Docker
+
+Start the PostgreSQL container which will create databases for all environments:
+
+```bash
+# Start PostgreSQL container
+npm run docker:up
+
+# Stop PostgreSQL container
+npm run docker:down
+```
+
+### Database Migrations
+
+To set up the database schema:
+
+```bash
+# Setup database for current NODE_ENV
+npm run db:setup
+
+# Setup database for specific environments
+npm run db:setup:dev   # Development
+npm run db:setup:test  # Test
+npm run db:setup:qa    # QA
+npm run db:setup:prod  # Production
+```
+
+### Prisma Studio
+
+To explore and manage your database with a visual interface:
+
+```bash
+npm run db:studio
 ```
 
 ## Configuration
@@ -41,6 +83,7 @@ Each file must contain the following variables (all are mandatory):
 - `JWT_EXPIRATION` - Expiration time for JWT tokens (e.g. "2h", "1d")
 - `LOG_LEVEL` - Log level (debug, info, warn, error)
 - `NODE_ENV` - Execution environment (development, qa, production, test)
+- `DATABASE_URL` - PostgreSQL connection URL
 
 **Important note**: The application will not start if any of these parameters are missing in the corresponding configuration file. An error message will be displayed detailing the missing parameters.
 
@@ -84,7 +127,7 @@ npm run clean-logs
 
 Authenticates the user and returns a JWT token.
 
-Available users:
+Default seeded users (in development/test):
 - Username: `admin`, Password: `1234`, Role: `admin`
 - Username: `user`, Password: `1234`, Role: `user`
 
@@ -98,7 +141,13 @@ curl -X POST http://localhost:3001/login \
 Successful response (HTTP 200):
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "username": "admin",
+    "name": "Administrator",
+    "role": "admin"
+  }
 }
 ```
 
@@ -129,7 +178,7 @@ Successful response (HTTP 200):
   },
   "user": {
     "username": "admin",
-    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "id": "550e8400-e29b-41d4-a716-446655440000",
     "role": "admin"
   }
 }
@@ -160,7 +209,7 @@ Successful response (HTTP 200):
   "message": "This endpoint is only accessible to admins",
   "user": {
     "username": "admin",
-    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "id": "550e8400-e29b-41d4-a716-446655440000",
     "role": "admin"
   }
 }
@@ -190,7 +239,7 @@ Successful response (HTTP 200):
   "message": "This endpoint is accessible to users and admins",
   "user": {
     "username": "user",
-    "uuid": "550e8400-e29b-41d4-a716-446655440001",
+    "id": "550e8400-e29b-41d4-a716-446655440001",
     "role": "user"
   }
 }
@@ -232,10 +281,17 @@ The test suite includes:
 ## Project Structure
 
 ```
+├── prisma/
+│   └── schema.prisma       # Prisma schema definition
+├── scripts/
+│   ├── clean-logs.js       # Script to clean log files
+│   ├── init-db.sql         # SQL script to initialize databases
+│   └── setup-database.js   # Script to set up the database
 ├── src/
 │   ├── config/
-│   │   ├── index.js
-│   │   └── permissions.json
+│   │   ├── database.js     # Database configuration
+│   │   ├── index.js        # Main configuration
+│   │   └── permissions.json # Role permissions
 │   ├── controllers/
 │   │   ├── authController.js
 │   │   └── mockController.js
@@ -246,24 +302,35 @@ The test suite includes:
 │   ├── routes/
 │   │   ├── authRoutes.js
 │   │   └── mockRoutes.js
+│   ├── services/
+│   │   └── userService.js  # User database operations
 │   ├── tests/
 │   │   ├── auth.test.js
-│   │   ├── authorization.test.js
 │   │   └── mock.test.js
 │   ├── utils/
 │   │   └── logger.js
 │   ├── app.js
 │   └── server.js
-├── logs/
-│   └── winston/
-├── scripts/
-│   └── clean-logs.js
-├── .env.development
-├── .env.qa
-├── .env.production
-├── .env.test
-├── jest.config.js
-├── mock-response.json
+├── .env.development        # Development environment variables
+├── .env.production         # Production environment variables
+├── .env.qa                 # QA environment variables
+├── .env.test               # Test environment variables
+├── docker-compose.yml      # Docker Compose for PostgreSQL
 ├── package.json
 └── README.md
-``` 
+```
+
+## Database Schema
+
+### User
+
+| Field      | Type      | Description                    |
+|------------|-----------|--------------------------------|
+| id         | UUID      | Primary key                    |
+| username   | String    | Unique username (max 255 chars)|
+| password   | String    | Hashed password                |
+| name       | String    | User's name (max 255 chars)    |
+| role       | String    | User's role (default: "user")  |
+| last_login | DateTime? | Last login timestamp           |
+| created_at | DateTime  | Creation timestamp             |
+| updated_at | DateTime  | Last update timestamp          | 
